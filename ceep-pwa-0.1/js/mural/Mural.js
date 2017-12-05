@@ -8,6 +8,16 @@ const Mural = (function(_render, Filtro){
     Filtro.on("filtrado", render)
 
     function preparaCartao(cartao){
+
+        var urlImagens = Cartao.pegaImagens(cartao);
+        urlImagens.forEach(url => {
+            fetch(url).then(resposta => {
+                caches.open("ceep-imagens").then(cache => {
+                    cache.put(url, resposta);
+                });
+            })
+        });
+
         cartao.on("mudanca.**", salvaCartoes);
         cartao.on("remocao", ()=>{
             cartoes = cartoes.slice(0)
@@ -45,6 +55,7 @@ const Mural = (function(_render, Filtro){
             cartao.on("mudanca.**", render)
             preparaCartao(cartao);
             render()
+
             return true
         }
     }
